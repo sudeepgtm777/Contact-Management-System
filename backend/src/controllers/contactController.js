@@ -54,3 +54,19 @@ export const updateContact = async (req, res) => {
     res.status(400).json({ status: 'fail', message: err.message });
   }
 };
+
+export const deleteContact = async (req, res) => {
+  try {
+    const contact = await Contact.findByIdAndDelete(req.params.id);
+
+    if (!contact) {
+      return res
+        .status(404)
+        .json({ status: 'fail', message: 'Contact not found' });
+    }
+
+    res.status(204).json({ status: 'success', data: null });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
