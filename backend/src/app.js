@@ -1,5 +1,6 @@
 import express from 'express';
 import { connectDB } from './config/db.js';
+import contactRoutes from './routes/contactRoute.js';
 
 import dotenv from 'dotenv';
 import path from 'path';
@@ -7,6 +8,8 @@ import path from 'path';
 dotenv.config({ path: path.resolve('src/config/config.env') });
 
 const app = express();
+
+app.use('/api/contacts', contactRoutes);
 
 connectDB();
 const port = process.env.PORT;
