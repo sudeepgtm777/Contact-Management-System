@@ -6,14 +6,6 @@ const contactSchema = new mongoose.Schema(
     user_name: {
       type: String,
       required: [true, 'Contact must have a name'],
-      validate: {
-        validator: function (val) {
-          // Must contain at least two words, each made of alphabetic letters only
-          return /^[A-Za-z]+(?:\s+[A-Za-z]+)+$/.test(val.trim());
-        },
-        message:
-          'Please enter your full name (first and last), using alphabets only.',
-      },
     },
     user_logo: {
       type: String,
@@ -36,7 +28,6 @@ const contactSchema = new mongoose.Schema(
       unique: true,
       validate: {
         validator: function (val) {
-          // Removes spaces and dashes
           const cleaned = val.replace(/[\s-]/g, '');
           // Number start with +977 and followed by exactly 10 digits
           return /^\+977\d{10}$/.test(cleaned);
