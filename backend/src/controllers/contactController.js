@@ -35,3 +35,22 @@ export const getContact = async (req, res) => {
     res.status(500).json({ status: 'error', message: err.message });
   }
 };
+
+export const updateContact = async (req, res) => {
+  try {
+    const contact = await Contact.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!contact) {
+      return res
+        .status(404)
+        .json({ status: 'fail', message: 'Contact not found' });
+    }
+
+    res.status(200).json({ status: 'success', data: { contact } });
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
+};
