@@ -22,7 +22,6 @@ const contactSchema = new mongoose.Schema(
     user_email: {
       type: String,
       required: [true, 'Contact must have an email'],
-      unique: true,
       lowercase: true,
       validate: [
         {
@@ -34,7 +33,19 @@ const contactSchema = new mongoose.Schema(
     user_phone: {
       type: String,
       required: [true, 'Contact must have a phone number'],
+      unique: true,
+      validate: {
+        validator: function (val) {
+          // Removes spaces and dashes
+          const cleaned = val.replace(/[\s-]/g, '');
+          // Number start with +977 and followed by exactly 10 digits
+          return /^\+977\d{10}$/.test(cleaned);
+        },
+        message:
+          'Please enter a valid Nepali phone number in the format +977XXXXXXXXXX.',
+      },
     },
+
     property_type: {
       type: String,
       enum: ['Residential', 'Commercial'],
