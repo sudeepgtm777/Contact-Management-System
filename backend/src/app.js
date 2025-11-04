@@ -9,6 +9,8 @@ dotenv.config({ path: path.resolve('src/config/config.env') });
 
 const app = express();
 
+app.use(express.json());
+
 app.use('/api/contacts', contactRoutes);
 
 connectDB();
