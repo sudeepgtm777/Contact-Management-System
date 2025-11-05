@@ -75,6 +75,12 @@ export const login = catchAsync(async (req, res, next) => {
 //  LOGOUT Controller
 // =====================
 export const logout = (req, res) => {
+  if (!req.cookies?.jwt) {
+    return res
+      .status(400)
+      .json({ status: 'fail', message: 'No user logged in' });
+  }
+
   res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
