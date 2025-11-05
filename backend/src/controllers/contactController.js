@@ -1,4 +1,5 @@
 import Contact from '../models/contactModel.js';
+import User from '../models/userModel.js';
 import AppError from '../utils/appError.js';
 
 export const createContact = async (req, res, next) => {
@@ -9,7 +10,14 @@ export const createContact = async (req, res, next) => {
     if (existingPhone) {
       return next(new AppError('Contact number already exists!', 400));
     }
-    const contact = await Contact.create(req.body);
+    const contact = await Contact.create({ ...req.body, user: req.user._id });
+
+    await User.findByIdAndUpdate(
+      req.user._id,
+      { $push: { contacts: contact._id } },
+      { new: true, runValidators: true }
+    );
+
     res.status(201).json({ status: 'success', data: { contact } });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });
