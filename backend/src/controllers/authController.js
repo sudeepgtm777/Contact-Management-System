@@ -1,4 +1,35 @@
+import { promisify } from 'util';
+import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
+import catchAsync from '../utils/catchAsync.js';
+import AppError from '../utils/appError.js';
+
+const signToken = (id) =>
+  jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+
+const createSendToken = (user, statusCode, req, res) => {
+  const token = signToken(user._id);
+
+  res.cookie('jwt', token, {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+  });
+
+  // Remove password from output
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: { user },
+  });
+};
 
 // =====================
 //  REGISTER Controller
@@ -84,3 +115,35 @@ export const isLoggedIn = async (req, res, next) => {
     res.status(200).json({ loggedIn: false });
   }
 };
+
+// =====================
+//  PROTECT Middleware
+// =====================
+export const protect = catchAsync(async (req, res, next) => {
+  let token;
+  if (req.headers.authorization?.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  }
+
+  if (!token || token === 'loggedout') {
+    return next(new AppError('Please log in to perform this action!', 401));
+  }
+
+  // 1. Verify token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // 2. Check if user still exists
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next(
+      new AppError('The user belonging to this token no longer exists.', 401)
+    );
+  }
+
+  // 3. Grant access
+  req.user = currentUser;
+  res.locals.user = currentUser;
+  next();
+});
