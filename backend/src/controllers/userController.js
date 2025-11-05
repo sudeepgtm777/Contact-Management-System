@@ -15,7 +15,10 @@ export const getAllUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).populate({
+      path: 'contacts',
+      select: '-__v',
+    });
     if (!user) {
       return res
         .status(404)
