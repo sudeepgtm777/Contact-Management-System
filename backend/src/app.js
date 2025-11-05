@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './config/db.js';
 import contactRoutes from './routes/contactRoute.js';
+import userRoutes from './routes/userRoute.js';
 import authRoutes from './routes/authRoute.js';
 import globalErrorHandler from './controllers/errorController.js';
 
@@ -17,6 +18,7 @@ app.use(cookieParser());
 
 app.use('/api/contacts', contactRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 connectDB();
 const port = process.env.PORT;
