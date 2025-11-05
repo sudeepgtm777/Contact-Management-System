@@ -49,6 +49,11 @@ const contactSchema = new mongoose.Schema(
     company: {
       type: String,
     },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   { timestamps: true }
 );
