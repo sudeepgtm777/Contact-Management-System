@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
+import Contact from './contactModel.js';
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -33,7 +34,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'default.jpg',
   },
-
+  contacts: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Contact',
+    },
+  ],
   password: {
     type: String,
     required: [true, 'Provide a password!'],
