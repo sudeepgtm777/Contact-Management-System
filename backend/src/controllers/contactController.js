@@ -1,7 +1,14 @@
 import Contact from '../models/contactModel.js';
+import AppError from '../utils/appError.js';
 
-export const createContact = async (req, res) => {
+export const createContact = async (req, res, next) => {
   try {
+    const existingPhone = await Contact.findOne({
+      user_phone: req.body.user_phone,
+    });
+    if (existingPhone) {
+      return next(new AppError('Contact number already exists!', 400));
+    }
     const contact = await Contact.create(req.body);
     res.status(201).json({ status: 'success', data: { contact } });
   } catch (err) {
