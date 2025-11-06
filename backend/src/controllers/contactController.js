@@ -1,87 +1,71 @@
 import Contact from '../models/contactModel.js';
 import User from '../models/userModel.js';
+import APIFeatures from '../utils/apiFeatures.js';
+
 import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
 
-export const createContact = async (req, res, next) => {
-  try {
-    const existingPhone = await Contact.findOne({
-      user_phone: req.body.user_phone,
-    });
-    if (existingPhone) {
-      return next(new AppError('Contact number already exists!', 400));
-    }
-    const contact = await Contact.create({ ...req.body, user: req.user._id });
-
-    await User.findByIdAndUpdate(
-      req.user._id,
-      { $push: { contacts: contact._id } },
-      { new: true, runValidators: true }
-    );
-
-    res.status(201).json({ status: 'success', data: { contact } });
-  } catch (err) {
-    res.status(400).json({ status: 'fail', message: err.message });
+export const createContact = catchAsync(async (req, res, next) => {
+  const existingPhone = await Contact.findOne({
+    user_phone: req.body.user_phone,
+  });
+  if (existingPhone) {
+    return next(new AppError('Contact number already exists!', 400));
   }
-};
+  const contact = await Contact.create({ ...req.body, user: req.user._id });
 
-export const getAllContacts = async (req, res) => {
-  try {
-    const contacts = await Contact.find();
-    res.status(200).json({
-      status: 'success',
-      results: contacts.length,
-      data: { contacts },
-    });
-  } catch (err) {
-    res.status(500).json({ status: 'error', message: err.message });
+  await User.findByIdAndUpdate(
+    req.user._id,
+    { $push: { contacts: contact._id } },
+    { new: true, runValidators: true }
+  );
+
+  res.status(201).json({ status: 'success', data: { contact } });
+});
+
+export const getAllContacts = catchAsync(async (req, res, next) => {
+  const features = new APIFeatures(Contact.find(), req.query).filter();
+
+  const contacts = await features.query;
+
+  if (!contacts || contacts.length === 0) {
+    return next(new AppError('No Contacts found!', 404));
   }
-};
 
-export const getContact = async (req, res) => {
-  try {
-    const contact = await Contact.findById(req.params.id);
-    if (!contact) {
-      return res
-        .status(404)
-        .json({ status: 'fail', message: 'Contact not found' });
-    }
-    res.status(200).json({ status: 'success', data: { contact } });
-  } catch (err) {
-    res.status(500).json({ status: 'error', message: err.message });
+  res.status(200).json({
+    status: 'success',
+    results: contacts.length,
+    data: { contacts },
+  });
+});
+
+export const getContact = catchAsync(async (req, res, next) => {
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) {
+    return next(new AppError('No Contacts found with Id!!', 404));
   }
-};
+  res.status(200).json({ status: 'success', data: { contact } });
+});
 
-export const updateContact = async (req, res) => {
-  try {
-    const contact = await Contact.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+export const updateContact = catchAsync(async (req, res, next) => {
+  const contact = await Contact.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
-    if (!contact) {
-      return res
-        .status(404)
-        .json({ status: 'fail', message: 'Contact not found' });
-    }
-
-    res.status(200).json({ status: 'success', data: { contact } });
-  } catch (err) {
-    res.status(400).json({ status: 'fail', message: err.message });
+  if (!contact) {
+    return next(new AppError('No Contacts found with Id!!', 404));
   }
-};
 
-export const deleteContact = async (req, res) => {
-  try {
-    const contact = await Contact.findByIdAndDelete(req.params.id);
+  res.status(200).json({ status: 'success', data: { contact } });
+});
 
-    if (!contact) {
-      return res
-        .status(404)
-        .json({ status: 'fail', message: 'Contact not found' });
-    }
+export const deleteContact = catchAsync(async (req, res, next) => {
+  const contact = await Contact.findByIdAndDelete(req.params.id);
 
-    res.status(204).json({ status: 'success', data: null });
-  } catch (err) {
-    res.status(400).json({ status: 'fail', message: err.message });
+  if (!contact) {
+    return next(new AppError('No Contacts found with Id!!', 404));
   }
-};
+
+  res.status(204).json({ status: 'success', data: null });
+});
