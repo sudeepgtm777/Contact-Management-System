@@ -36,6 +36,23 @@ class APIFeatures {
 
     return this;
   }
+
+  search() {
+    if (this.queryString.search) {
+      const searchTerm = this.queryString.search.trim();
+
+      const regex = new RegExp(searchTerm, 'i');
+      this.query = this.query.find({
+        $or: [
+          { user_name: { $regex: regex } },
+          { user_phone: { $regex: regex } },
+          { user_email: { $regex: regex } },
+        ],
+      });
+    }
+
+    return this;
+  }
 }
 
 export default APIFeatures;
