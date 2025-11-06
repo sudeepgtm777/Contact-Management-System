@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Contact from '../models/contactModel.js';
 import User from '../models/userModel.js';
 import APIFeatures from '../utils/apiFeatures.js';
@@ -71,4 +72,37 @@ export const deleteContact = catchAsync(async (req, res, next) => {
   }
 
   res.status(204).json({ status: 'success', data: null });
+});
+
+export const deleteMultipleContacts = catchAsync(async (req, res, next) => {
+  const { ids } = req.body;
+
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return next(
+      new AppError('Please provide an array of contact IDs to delete.', 400)
+    );
+  }
+
+  const invalidIds = ids.filter((id) => !mongoose.Types.ObjectId.isValid(id));
+  if (invalidIds.length > 0) {
+    return next(
+      new AppError(
+        `Some of the provided IDs are invalid: ${invalidIds.join(', ')}`,
+        400
+      )
+    );
+  }
+
+  const result = await Contact.deleteMany({ _id: { $in: ids } });
+
+  if (result.deletedCount === 0) {
+    return next(
+      new AppError('No contacts found to delete with the provided IDs.', 404)
+    );
+  }
+
+  res.status(200).json({
+    status: 'success',
+    message: `${result.deletedCount} contact(s) were deleted successfully.`,
+  });
 });

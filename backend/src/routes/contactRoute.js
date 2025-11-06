@@ -5,6 +5,7 @@ import {
   getAllContacts,
   getContact,
   updateContact,
+  deleteMultipleContacts,
 } from '../controllers/contactController.js';
 import { protect } from '../controllers/authController.js';
 
@@ -16,6 +17,7 @@ router.post('/', createContact);
 router.get('/', getAllContacts);
 router.get('/:id', getContact);
 router.put('/:id', updateContact);
+router.delete('/bulk', deleteMultipleContacts);
 router.delete('/:id', deleteContact);
 
 export default router;
