@@ -1,5 +1,6 @@
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
+import AppError from '../utils/appError.js';
 
 export const getAllUsers = async (req, res) => {
   const users = await User.find();
@@ -15,7 +16,7 @@ export const getAllUsers = async (req, res) => {
   });
 };
 
-export const getUser = catchAsync(async (req, res) => {
+export const getUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id).populate({
     path: 'contacts',
     select: '-__v',
