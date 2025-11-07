@@ -94,7 +94,10 @@ export const deleteContact = catchAsync(async (req, res, next) => {
     return next(new AppError('No Contacts found with Id!!', 404));
   }
 
-  res.status(204).json({ status: 'success', data: null });
+  res.status(200).json({
+    status: 'success',
+    message: 'Contact deleted Succesfully!!!',
+  });
 });
 
 export const deleteMultipleContacts = catchAsync(async (req, res, next) => {
