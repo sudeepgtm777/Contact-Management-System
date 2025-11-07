@@ -17,7 +17,7 @@ export const getAllUsers = async (req, res) => {
 
 export const getUser = catchAsync(async (req, res) => {
   const user = await User.findById(req.params.id).populate({
-    path: 'users',
+    path: 'contacts',
     select: '-__v',
   });
   if (!user) {
@@ -32,7 +32,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
     runValidators: true,
   });
 
-  if (!user) {
+  if (!user || user.length == 0) {
     return next(new AppError('No Users found with Id!!', 404));
   }
 
