@@ -43,6 +43,29 @@ export const getAllContacts = catchAsync(async (req, res, next) => {
   });
 });
 
+export const getAllContactsOfLoggedInUser = catchAsync(
+  async (req, res, next) => {
+    const features = new APIFeatures(
+      Contact.find({ user: req.user.id }),
+      req.query
+    )
+      .filter()
+      .limitFields()
+      .paginate()
+      .search();
+    const contacts = await features.query;
+    if (!contacts || contacts.length === 0) {
+      return next(new AppError('No contacts found for this user', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      results: contacts.length,
+      data: { contacts },
+    });
+  }
+);
+
 export const getContact = catchAsync(async (req, res, next) => {
   const contact = await Contact.findById(req.params.id);
   if (!contact) {
