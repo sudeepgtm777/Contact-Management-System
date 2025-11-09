@@ -33,7 +33,7 @@ const contactSchema = new mongoose.Schema(
           return /^\+977\d{10}$/.test(cleaned);
         },
         message:
-          'Please enter a valid Nepali phone number in the format +977XXXXXXXXXX.',
+          'Please enter a valid Nepali phone number in the format +977XXXXXXXXXX (10digits).',
       },
     },
 
