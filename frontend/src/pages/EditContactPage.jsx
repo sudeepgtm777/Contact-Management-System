@@ -76,7 +76,16 @@ const EditContactPage = () => {
       setSuccess('Contact updated successfully!');
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Error updating contact.');
+      const serverMessage = err.response?.data?.message;
+
+      if (
+        serverMessage?.includes('duplicate') ||
+        serverMessage?.includes('already exists')
+      ) {
+        setError('This phone number is already used by another contact.');
+      } else {
+        setError(serverMessage || 'Error updating contact. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
