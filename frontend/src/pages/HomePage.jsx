@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FiPlus } from 'react-icons/fi';
-import api from '../utils/axios.js';
 import { Link } from 'react-router';
+import { toast } from 'react-hot-toast';
+import api from '../utils/axios.js';
 
 export const HomePage = () => {
   const [contacts, setContacts] = useState([]);
@@ -9,12 +10,21 @@ export const HomePage = () => {
   const [error, setError] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [selectedContacts, setSelectedContacts] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterProperty, setFilterProperty] = useState('');
   const [page, setPage] = useState(1);
   const [totalContacts, setTotalContacts] = useState(0);
   const limit = 5;
+
+  const handleCheckboxChange = (e, id) => {
+    if (e.target.checked) {
+      setSelectedContacts([...selectedContacts, id]);
+    } else {
+      setSelectedContacts(selectedContacts.filter((item) => item !== id));
+    }
+  };
 
   const fetchContacts = async (search = '', filter = '', pageNum = 1) => {
     setLoading(true);
@@ -37,11 +47,10 @@ export const HomePage = () => {
 
       const contactsRes = await api.get(query);
       const contacts = contactsRes.data.data.contacts || [];
-      const total =
-        contactsRes.data.totalContacts || contactsRes.data.results || 0;
+      const total = contactsRes.data.totalContacts || contacts.length;
 
-      setContacts(Array.isArray(contacts) ? contacts : [contacts]);
-      setTotalContacts(total || 0);
+      setContacts(contacts);
+      setTotalContacts(total);
     } catch (err) {
       console.error(err);
       setError('Error fetching contacts');
@@ -52,7 +61,7 @@ export const HomePage = () => {
 
   useEffect(() => {
     fetchContacts(searchQuery, filterProperty, page);
-  }, [page]);
+  }, [searchQuery, filterProperty, page]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -63,6 +72,24 @@ export const HomePage = () => {
   const handleNext = () => {
     if (page * limit < totalContacts) {
       setPage((prev) => prev + 1);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete selected contacts?'))
+      return;
+
+    try {
+      await api.delete('/contacts/bulk', {
+        data: { ids: selectedContacts },
+      });
+      setSelectedContacts([]);
+      fetchContacts(searchQuery, filterProperty, page);
+
+      toast.success('Selected contacts deleted successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete contacts');
     }
   };
 
@@ -145,41 +172,106 @@ export const HomePage = () => {
               </p>
             ) : (
               <>
+                {/* Bulk Delete Button */}
+                {selectedContacts.length > 0 && (
+                  <button
+                    onClick={handleBulkDelete}
+                    className='mb-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700'
+                  >
+                    Delete Selected ({selectedContacts.length})
+                  </button>
+                )}
+
                 <table className='min-w-full text-sm'>
                   <thead className='bg-gray-100 text-gray-600'>
                     <tr>
+                      {/* Select All Checkbox */}
+                      <th className='px-6 py-3'>
+                        <input
+                          type='checkbox'
+                          checked={
+                            selectedContacts.length > 0 &&
+                            selectedContacts.length === contacts.length
+                          }
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedContacts(contacts.map((c) => c._id));
+                            } else {
+                              setSelectedContacts([]);
+                            }
+                          }}
+                          className='w-4 h-4'
+                        />
+                      </th>
+
                       <th className='text-left px-6 py-3 font-medium'>Name</th>
                       <th className='text-left px-6 py-3 font-medium'>Email</th>
                       <th className='text-left px-6 py-3 font-medium'>Phone</th>
                       <th className='text-left px-6 py-3 font-medium'>
                         Property Type
                       </th>
+                      <th className='text-left px-6 py-3 font-medium'>
+                        Actions
+                      </th>
                     </tr>
                   </thead>
+
                   <tbody>
                     {contacts.map((contact) => (
                       <tr
                         key={contact._id}
                         className='border-t hover:bg-gray-50 transition'
                       >
-                        <td className='px-6 py-3 flex items-center gap-3'>
-                          <img
-                            src={`/users/${contact.user_logo}`}
-                            alt={contact.user_name}
-                            className='w-10 h-10 rounded-full object-cover'
+                        {/* Individual Checkbox */}
+                        <td className='px-6 py-3'>
+                          <input
+                            type='checkbox'
+                            value={contact._id}
+                            checked={selectedContacts.includes(contact._id)}
+                            onChange={(e) =>
+                              handleCheckboxChange(e, contact._id)
+                            }
+                            className='w-4 h-4'
                           />
+                        </td>
+
+                        {/* Name */}
+                        <td className='px-6 py-3 flex items-center gap-3'>
+                          {contact.user_logo && (
+                            <img
+                              src={`/users/${contact.user_logo}`}
+                              alt={contact.user_name}
+                              className='w-10 h-10 rounded-full object-cover'
+                            />
+                          )}
                           <span className='font-medium'>
                             {contact.user_name}
                           </span>
                         </td>
+
+                        {/* Email */}
                         <td className='px-6 py-3 text-gray-600'>
                           {contact.user_email}
                         </td>
+
+                        {/* Phone */}
                         <td className='px-6 py-3 text-gray-600'>
                           {contact.user_phone}
                         </td>
+
+                        {/* Property Type */}
                         <td className='px-6 py-3 text-gray-600'>
                           {contact.property_type}
+                        </td>
+
+                        {/* Actions */}
+                        <td className='px-6 py-3'>
+                          <Link
+                            to={`/edit-contact/${contact._id}`}
+                            className='text-blue-600 hover:underline'
+                          >
+                            Edit
+                          </Link>
                         </td>
                       </tr>
                     ))}
