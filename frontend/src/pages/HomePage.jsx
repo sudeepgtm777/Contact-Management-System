@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiPlus } from 'react-icons/fi';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import api from '../utils/axios.js';
 
