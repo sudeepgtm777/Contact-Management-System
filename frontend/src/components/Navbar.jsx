@@ -65,17 +65,22 @@ const Navbar = () => {
 
                 {loggedIn ? (
                   <>
-                    {/* Show first name */}
-                    <span className='bg-green-500 hover:bg-green-700 text-white rounded-md px-3 py-2 cursor-pointer'>
-                      {user?.name?.split(' ')[0]}
-                    </span>
-                    {/* Sign out button */}
                     <button
                       onClick={handleLogout}
                       className={LinkClass({ isActive: false })}
                     >
-                      Sign Out
+                      Log Out
                     </button>
+                    {/* Show first name */}
+                    <img
+                      src={`/users/${user.photo}`}
+                      alt={`Photo of ${user?.name}`}
+                      className=' w-10 h-10 rounded-full object-cover border border-gray-30'
+                    />{' '}
+                    <span className=' text-white rounded-md px-3 py-2'>
+                      {user?.name?.split(' ')[0]}
+                    </span>
+                    {/* Sign out button */}
                   </>
                 ) : (
                   <>
