@@ -11,6 +11,7 @@ const App = () => {
     <div>
       <Routes>
         <Route path='/' element={<MainLayout />}>
+          <Route index element={<HomePage />} />
           <Route path='*' element={<NotFoundPage />} />
           <Route path='/sign-up' element={<SignUp />} />
           <Route path='/sign-in' element={<LoginPage />} />
