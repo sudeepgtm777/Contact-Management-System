@@ -8,6 +8,7 @@ import catchAsync from '../utils/catchAsync.js';
 
 export const createContact = catchAsync(async (req, res, next) => {
   const existingPhone = await Contact.findOne({
+    user: req.user._id,
     user_phone: req.body.user_phone,
   });
   if (existingPhone) {
@@ -54,7 +55,7 @@ export const getAllContactsOfLoggedInUser = catchAsync(
       .paginate()
       .search();
     const contacts = await features.query;
-    if (!contacts || contacts.length === 0) {
+    if (!contacts) {
       return next(new AppError('No contacts found for this user', 404));
     }
 
