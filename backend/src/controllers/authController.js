@@ -109,7 +109,10 @@ export const isLoggedIn = async (req, res, next) => {
     }
 
     // Check if user still exists
-    const currentUser = await User.findById(decoded.id);
+    const currentUser = await User.findById(decoded.id).populate({
+      path: 'contacts',
+      select: '-__v',
+    });
     if (!currentUser) {
       return res.status(200).json({ loggedIn: false });
     }
