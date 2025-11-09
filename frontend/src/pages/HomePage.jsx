@@ -12,8 +12,11 @@ export const HomePage = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterProperty, setFilterProperty] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalContacts, setTotalContacts] = useState(0);
+  const limit = 5;
 
-  const fetchContacts = async (search = '', filter = '') => {
+  const fetchContacts = async (search = '', filter = '', pageNum = 1) => {
     setLoading(true);
     try {
       const { data } = await api.get('/auth/isLoggedIn');
@@ -27,14 +30,18 @@ export const HomePage = () => {
       setLoggedIn(true);
       setUser(data.user);
 
-      // Build query string properly
-      let query = '/contacts/user?page=1&limit=10';
+      // Build query
+      let query = `/contacts/user?page=${pageNum}&limit=${limit}`;
       if (search) query += `&search=${encodeURIComponent(search)}`;
       if (filter) query += `&property_type=${encodeURIComponent(filter)}`;
 
       const contactsRes = await api.get(query);
-      const contact = contactsRes.data.data.contacts;
-      setContacts(Array.isArray(contact) ? contact : [contact]);
+      const contacts = contactsRes.data.data.contacts || [];
+      const total =
+        contactsRes.data.totalContacts || contactsRes.data.results || 0;
+
+      setContacts(Array.isArray(contacts) ? contacts : [contacts]);
+      setTotalContacts(total || 0);
     } catch (err) {
       console.error(err);
       setError('Error fetching contacts');
@@ -44,14 +51,28 @@ export const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchContacts();
-  }, []);
+    fetchContacts(searchQuery, filterProperty, page);
+  }, [page]);
 
-  //  Trigger search when form is submitted
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetchContacts(searchQuery, filterProperty);
+    setPage(1); // Reset to first page on new search/filter
+    fetchContacts(searchQuery, filterProperty, 1);
   };
+
+  const handleNext = () => {
+    if (page * limit < totalContacts) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (page > 1) {
+      setPage((prev) => prev - 1);
+    }
+  };
+
+  const totalPages = Math.ceil(totalContacts / limit);
 
   return loggedIn ? (
     <div className='h-screen flex flex-col bg-gray-50 text-gray-800'>
@@ -67,7 +88,6 @@ export const HomePage = () => {
         </Link>
       </header>
 
-      {/* Main Content */}
       <div className='flex flex-1 overflow-hidden'>
         {/* Sidebar */}
         <aside className='w-64 bg-white border-r p-4 hidden md:block'>
@@ -78,11 +98,11 @@ export const HomePage = () => {
           </nav>
         </aside>
 
-        {/* Contacts List */}
+        {/* Main Section */}
         <main className='flex-1 overflow-y-auto p-6'>
           <h2 className='text-lg font-semibold mb-4'>All Contacts</h2>
 
-          {/*  Search and Filter Section */}
+          {/* Search & Filter */}
           <form
             onSubmit={handleSubmit}
             className='flex flex-col md:flex-row gap-4 mb-6'
@@ -113,7 +133,7 @@ export const HomePage = () => {
             </button>
           </form>
 
-          {/* 🔹 Contacts Table */}
+          {/* Contacts Table */}
           <div className='bg-white rounded-lg shadow-sm border'>
             {loading ? (
               <p className='p-4 text-center'>Loading...</p>
@@ -124,44 +144,79 @@ export const HomePage = () => {
                 No contacts found.
               </p>
             ) : (
-              <table className='min-w-full text-sm'>
-                <thead className='bg-gray-100 text-gray-600'>
-                  <tr>
-                    <th className='text-left px-6 py-3 font-medium'>Name</th>
-                    <th className='text-left px-6 py-3 font-medium'>Email</th>
-                    <th className='text-left px-6 py-3 font-medium'>Phone</th>
-                    <th className='text-left px-6 py-3 font-medium'>
-                      Property Type
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {contacts.map((contact) => (
-                    <tr
-                      key={contact._id}
-                      className='border-t hover:bg-gray-50 transition'
-                    >
-                      <td className='px-6 py-3 flex items-center gap-3'>
-                        <img
-                          src={`/users/${contact.user_logo}`}
-                          alt={contact.user_name}
-                          className='w-10 h-10 rounded-full object-cover'
-                        />
-                        <span className='font-medium'>{contact.user_name}</span>
-                      </td>
-                      <td className='px-6 py-3 text-gray-600'>
-                        {contact.user_email}
-                      </td>
-                      <td className='px-6 py-3 text-gray-600'>
-                        {contact.user_phone}
-                      </td>
-                      <td className='px-6 py-3 text-gray-600'>
-                        {contact.property_type}
-                      </td>
+              <>
+                <table className='min-w-full text-sm'>
+                  <thead className='bg-gray-100 text-gray-600'>
+                    <tr>
+                      <th className='text-left px-6 py-3 font-medium'>Name</th>
+                      <th className='text-left px-6 py-3 font-medium'>Email</th>
+                      <th className='text-left px-6 py-3 font-medium'>Phone</th>
+                      <th className='text-left px-6 py-3 font-medium'>
+                        Property Type
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {contacts.map((contact) => (
+                      <tr
+                        key={contact._id}
+                        className='border-t hover:bg-gray-50 transition'
+                      >
+                        <td className='px-6 py-3 flex items-center gap-3'>
+                          <img
+                            src={`/users/${contact.user_logo}`}
+                            alt={contact.user_name}
+                            className='w-10 h-10 rounded-full object-cover'
+                          />
+                          <span className='font-medium'>
+                            {contact.user_name}
+                          </span>
+                        </td>
+                        <td className='px-6 py-3 text-gray-600'>
+                          {contact.user_email}
+                        </td>
+                        <td className='px-6 py-3 text-gray-600'>
+                          {contact.user_phone}
+                        </td>
+                        <td className='px-6 py-3 text-gray-600'>
+                          {contact.property_type}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/*  Pagination Controls */}
+                <div className='flex justify-between items-center p-4 border-t bg-gray-50'>
+                  <button
+                    onClick={handlePrevious}
+                    disabled={page === 1}
+                    className={`px-4 py-2 rounded-md ${
+                      page === 1
+                        ? 'bg-gray-300 cursor-not-allowed'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    Previous
+                  </button>
+
+                  <p className='text-gray-700'>
+                    Page {page} of {totalPages || 1}
+                  </p>
+
+                  <button
+                    onClick={handleNext}
+                    disabled={page * limit >= totalContacts}
+                    className={`px-4 py-2 rounded-md ${
+                      page * limit >= totalContacts
+                        ? 'bg-gray-300 cursor-not-allowed'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
             )}
           </div>
         </main>
