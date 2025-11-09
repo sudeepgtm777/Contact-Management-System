@@ -28,9 +28,9 @@ export const createContact = catchAsync(async (req, res, next) => {
 export const getAllContacts = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Contact.find(), req.query)
     .filter()
+    .search()
     .limitFields()
-    .paginate()
-    .search();
+    .paginate();
   const contacts = await features.query;
 
   if (!contacts || contacts.length === 0) {
@@ -51,16 +51,19 @@ export const getAllContactsOfLoggedInUser = catchAsync(
       req.query
     )
       .filter()
-      .limitFields()
-      .paginate()
-      .search();
+      .search()
+      .limitFields();
+    const totalContacts = await features.query.clone().countDocuments();
+    features.paginate();
     const contacts = await features.query;
+
     if (!contacts) {
       return next(new AppError('No contacts found for this user', 404));
     }
 
     res.status(200).json({
       status: 'success',
+      totalContacts,
       results: contacts.length,
       data: { contacts },
     });

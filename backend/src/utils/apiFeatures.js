@@ -40,9 +40,10 @@ class APIFeatures {
   search() {
     if (this.queryString.search) {
       const searchTerm = this.queryString.search.trim();
-
       const regex = new RegExp(searchTerm, 'i');
+
       this.query = this.query.find({
+        ...this.query._conditions,
         $or: [
           { user_name: { $regex: regex } },
           { user_phone: { $regex: regex } },
@@ -50,7 +51,6 @@ class APIFeatures {
         ],
       });
     }
-
     return this;
   }
 }
