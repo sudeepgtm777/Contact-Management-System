@@ -5,6 +5,7 @@ import MainLayout from './layouts/MainLayout';
 import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/LoginPage';
 import SignUp from './pages/SignupPage';
+import AddContactPage from './pages/AddContactPage';
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
       <Routes>
         <Route path='/' element={<MainLayout />}>
           <Route index element={<HomePage />} />
+          <Route path='add-contact' element={<AddContactPage />} />
           <Route path='*' element={<NotFoundPage />} />
           <Route path='/sign-up' element={<SignUp />} />
           <Route path='/sign-in' element={<LoginPage />} />

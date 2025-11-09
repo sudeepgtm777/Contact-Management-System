@@ -14,18 +14,19 @@ export const HomePage = () => {
     const fetchContacts = async () => {
       try {
         const { data } = await api.get('/auth/isLoggedIn');
+
         if (data.loggedIn) {
           setLoggedIn(true);
           setUser(data.user);
+
+          const dataContacts = await api.get('/contacts/user');
+
+          const contact = dataContacts.data.data.contacts;
+          setContacts(Array.isArray(contact) ? contact : [contact]);
         } else {
           setLoggedIn(false);
           setUser(null);
-        }
-        if (data.user) {
-          const contact = data.user.contacts;
-          setContacts(Array.isArray(contact) ? contact : [contact]);
-        } else {
-          setError('Failed to load contacts');
+          setError('You are not logged in');
         }
       } catch (err) {
         console.error(err);
@@ -36,21 +37,20 @@ export const HomePage = () => {
     };
 
     fetchContacts();
-  });
-  const LinkClass = ({ isActive }) =>
-    isActive
-      ? 'bg-black text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2'
-      : 'text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2';
+  }, []);
 
   return loggedIn ? (
     <div className='h-screen flex flex-col bg-gray-50 text-gray-800'>
       {/* Navbar */}
       <header className='flex items-center justify-between px-6 py-3 bg-white border-b shadow-sm'>
         <h1 className='text-xl font-semibold text-blue-600'>Contacts</h1>
-        <button className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition'>
+        <Link
+          to='/add-contact'
+          className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition'
+        >
           <FiPlus />
           Add Contact
-        </button>
+        </Link>
       </header>
 
       {/* Main Content */}
