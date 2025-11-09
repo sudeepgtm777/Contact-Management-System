@@ -63,7 +63,7 @@ export const getAllContactsOfLoggedInUser = catchAsync(
 
     res.status(200).json({
       status: 'success',
-      totalContacts,
+      totalContacts: await Contact.countDocuments({ user: req.user.id }),
       results: contacts.length,
       data: { contacts },
     });
