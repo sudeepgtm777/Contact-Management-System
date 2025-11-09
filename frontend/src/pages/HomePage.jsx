@@ -136,7 +136,7 @@ export const HomePage = () => {
           >
             <input
               type='text'
-              placeholder='Search by name, email, or phone...'
+              placeholder='Search by name, email or phone...'
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className='flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300'
