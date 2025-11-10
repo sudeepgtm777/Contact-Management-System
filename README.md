@@ -9,7 +9,9 @@ It allows users to register, logIn, and manage their personal contacts securely.
 
 To test the API endpoints, you can use the Postman collection provided. This collection contains all the available API requests for managing contacts and can be accessed directly from the link below:
 
-[API Documentation in Postman(Link)](https://documenter.getpostman.com/view/31782444/2sB3WsPf3w)
+API Documentation in Postman
+
+[https://documenter.getpostman.com/view/31782444/2sB3WsPf3w](https://documenter.getpostman.com/view/31782444/2sB3WsPf3w)
 
 
 
@@ -67,26 +69,33 @@ contact-management-system/
 ##  Backend Setup
 
 1️⃣ Clone the Repository
+```
 git clone https://github.com/sudeepgtm777/Contact-Management-System.git
+```
 
 2️⃣ Install Dependencies
 Open termial
-
+```
 cd backend
+
 npm install
+```
 
 3️⃣ Environment Variables
 Create a .env file in /backend/config/config.env file with:
-
+```
 PORT=3000
 DATABASE=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRES_IN=90d
+```
 
 4️⃣ Run the Server
 
 In backend terminal
+```
 npm run dev
+```
 
 Server will start on:
 http://localhost:3000
@@ -130,13 +139,19 @@ http://localhost:3000
 Open new terminal
 
 1️⃣ Navigate to the Frontend
+```
 cd frontend
+```
 
 2️⃣ Install Dependencies
+```
 npm install
+```
 
 4️⃣ Run the Frontend
+```
 npm run dev
+```
 
 App runs at:
 http://localhost:5173
@@ -155,16 +170,9 @@ http://localhost:5173
 
 ##  Deployment
 
-Both frontend and backend are deployed on Render.
+The deployment of the Contact Managment API is on:
 
-### Backend
-
-- Add environment variables in Render Dashboard.
-- Deploy from GitHub or manual build.
-
-### Frontend
-
-- Set environment variable:
+[https://contact-management-system-v0yi.onrender.com/](https://contact-management-system-v0yi.onrender.com/)
 
 ---
 
@@ -241,5 +249,3 @@ Both frontend and backend are deployed on Render.
 ##  Author
 
 Sudeep Gautam
-
-
