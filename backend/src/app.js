@@ -16,11 +16,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load environment variables
-dotenv.config({ path: path.join(__dirname, '../../config/config.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../config/config.env') });
 
 const app = express();
 
-// Enable CORS only in development
+// CORS only in development
 if (process.env.NODE_ENV !== 'production') {
   app.use(
     cors({
@@ -30,31 +30,33 @@ if (process.env.NODE_ENV !== 'production') {
   );
 }
 
-// Middleware
+// Body parser & cookies
 app.use(express.json());
 app.use(cookieParser());
 
-// API routes
+// API Routes
 app.use('/api/contacts', contactRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
-  const frontendDistPath = path.join(__dirname, '../../frontend/dist');
-  app.use(express.static(frontendDistPath));
+  const frontendDist = path.resolve(__dirname, '../../frontend/dist');
 
-  // Catch-all route to serve frontend for SPA routing
-  app.get('/*', (req, res) => {
-    res.sendFile('index.html', { root: frontendDistPath });
+  // Serve static files
+  app.use(express.static(frontendDist));
+
+  // Correct catch-all for client-side routing
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(frontendDist, 'index.html'));
   });
 }
 
 // Connect to database
 connectDB();
 
-// 404 handler for API routes
-app.use('/api', (req, res, next) => {
+// Handle undefined routes
+app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
