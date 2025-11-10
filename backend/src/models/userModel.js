@@ -28,6 +28,28 @@ const userSchema = new mongoose.Schema(
           validator: validator.isEmail,
           message: 'Use a valid Email!',
         },
+        {
+          validator: function (val) {
+            if (!val) return false;
+
+            const [username, domain] = val.split('@');
+            if (!domain) {
+              return false;
+            }
+
+            if (/^\d+$/.test(username)) {
+              return false;
+            }
+
+            if (username.length < 6) {
+              return false;
+            }
+
+            return true;
+          },
+          message:
+            'Please use a valid Email Address with at least 6 characters long and not all digits!',
+        },
       ],
     },
 
