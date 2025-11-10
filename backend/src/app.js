@@ -10,8 +10,10 @@ import AppError from './utils/appError.js';
 
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, 'config', 'config.env') });
 
@@ -36,12 +38,13 @@ app.use('/api/users', userRoutes);
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
-  app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'dist', 'index.html'));
+  app.use((req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
   });
 }
 
 connectDB();
+
 const port = process.env.PORT;
 
 app.use((req, res, next) => {
