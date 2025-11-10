@@ -5,6 +5,15 @@ It allows users to register, logIn, and manage their personal contacts securely.
 
 ---
 
+## API Documentation
+
+To test the API endpoints, you can use the Postman collection provided. This collection contains all the available API requests for managing contacts and can be accessed directly from the link below:
+
+[API Documentation in Postman(Link)](https://documenter.getpostman.com/view/31782444/2sB3WsPf3w)
+
+
+
+
 ##  Tech Stack
 
 ###  Frontend
@@ -20,6 +29,7 @@ It allows users to register, logIn, and manage their personal contacts securely.
 - Node.js + Express
 - MongoDB (via Mongoose)
 - JWT Authentication
+- Password encryption(bcryptjs)
 - CORS for secure cross-origin requests
 
 ---
@@ -198,7 +208,21 @@ Both frontend and backend are deployed on Render.
 
 ---
 
-## 🧑 Author
+## Screen Shot Of Contact Mangagement System
+
+![Home Page Screenshot](frontend/public/screenshots/HomePage.png)
+![Sign Up Page Screenshot](frontend/public/screenshots/SignUpPage.png)
+![Login Page Screenshot](frontend/public/screenshots/LoginPage.png)
+![Contacts Page Screenshot](frontend/public/screenshots/ContactsPage.png)
+![Add Contact Page Screenshot](frontend/public/screenshots/AddContactPage.png)
+![Search in Contacts Page Screenshot](frontend/public/screenshots/SearchUseInContactPage.png)
+![Bulk Delete Contact Screenshot](frontend/public/screenshots/BulkDeleteContact.png)
+![Unknown Route Screenshot](frontend/public/screenshots/UnknownRoute.png)
+
+
+
+
+##  Author
 
 Sudeep Gautam
 
