@@ -61,7 +61,7 @@ contact-management-system/
 │   │   └── app.js
 │   └── package.json
 └── README.md
-
+```
 ---
 
 ##  Backend Setup
@@ -93,9 +93,9 @@ http://localhost:3000
 
 ---
 
-## 🔗 API Endpoints
+## API Endpoints
 
-### 🔐 Authentication
+###  Authentication
 
 | Method | Endpoint             | Description                |
 | ------ | -------------------- | -------------------------- |
@@ -104,7 +104,7 @@ http://localhost:3000
 | GET    | /api/auth/logout     | Logout user                |
 | GET    | /api/auth/isLoggedIn | Check if user is logged in |
 
-### 👤 Users
+###  Users
 
 | Method | Endpoint       | Description     |
 | ------ | -------------- | --------------- |
@@ -112,7 +112,7 @@ http://localhost:3000
 | GET    | /api/users/:id | Get single user |
 | PUT    | /api/users/:id | Update user     |
 
-### 📞 Contacts
+###  Contacts
 
 | Method | Endpoint           | Description                    |
 | ------ | ------------------ | ------------------------------ |
@@ -143,7 +143,7 @@ http://localhost:5173
 
 ---
 
-## 🔐 Authentication Flow
+##  Authentication Flow
 
 1. User registers → stored in MongoDB with encrypted password
 2. User logs in → receives JWT token
@@ -153,7 +153,7 @@ http://localhost:5173
 
 ---
 
-## 🌍 Deployment
+##  Deployment
 
 Both frontend and backend are deployed on Render.
 
@@ -168,7 +168,7 @@ Both frontend and backend are deployed on Render.
 
 ---
 
-## 🧪 Scripts
+##  Scripts
 
 ### Frontend
 
