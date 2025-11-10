@@ -210,14 +210,30 @@ Both frontend and backend are deployed on Render.
 
 ## Screen Shot Of Contact Mangagement System
 
-![Home Page Screenshot](frontend/public/screenshots/HomePage.png)
-![Sign Up Page Screenshot](frontend/public/screenshots/SignUpPage.png)
-![Login Page Screenshot](frontend/public/screenshots/LoginPage.png)
-![Contacts Page Screenshot](frontend/public/screenshots/ContactsPage.png)
-![Add Contact Page Screenshot](frontend/public/screenshots/AddContactPage.png)
-![Search in Contacts Page Screenshot](frontend/public/screenshots/SearchUseInContactPage.png)
-![Bulk Delete Contact Screenshot](frontend/public/screenshots/BulkDeleteContact.png)
-![Unknown Route Screenshot](frontend/public/screenshots/UnknownRoute.png)
+### Home Page
+![Home Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/HomePage.png?raw=true)
+
+### Sign Up Page
+![Sign Up Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/SignUpPage.png?raw=true)
+
+### Login Page
+![Login Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/LoginPage.png?raw=true)
+
+### Contacts Page
+![Contacts Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/ContactsPage.png?raw=true)
+
+### Add Contact Page
+![Add Contact Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/AddContactPage.png?raw=true)
+
+### Search in Contacts Page
+![Search in Contacts Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/SearchUseInContactPage.png?raw=true)
+
+### Bulk Delete Contact
+![Bulk Delete Contact Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/BulkDeleteContact.png?raw=true)
+
+### Unknown Route
+![Unknown Route Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/UnknownRoute.png?raw=true)
+
 
 
 
