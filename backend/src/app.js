@@ -15,7 +15,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, 'config', 'config.env') });
+dotenv.config({ path: path.join(__dirname, '../../config/config.env') });
 
 const app = express();
 
@@ -36,16 +36,18 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  const frontendDistPath = path.join(__dirname, '../../frontend/dist');
 
-  app.use((req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  app.use(express.static(frontendDistPath));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
   });
 }
 
 connectDB();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
@@ -54,5 +56,5 @@ app.use((req, res, next) => {
 app.use(globalErrorHandler);
 
 app.listen(port, () => {
-  console.log(`Server Started on Port ${port}`);
+  console.log(`Server started on port ${port}`);
 });
