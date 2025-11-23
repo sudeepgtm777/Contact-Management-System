@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import api from '../utils/axios.js';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+
 export const HomePage = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +67,7 @@ export const HomePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setPage(1); // Reset to first page on new search/filter
+    setPage(1);
     fetchContacts(searchQuery, filterProperty, 1);
   };
 
@@ -239,11 +241,12 @@ export const HomePage = () => {
                         <td className='px-6 py-3 flex items-center gap-3'>
                           {contact.user_logo && (
                             <img
-                              src={`/users/${contact.user_logo}`}
+                              src={`${BACKEND_URL}/users/${contact.user_logo}`}
                               alt={contact.user_name}
                               className='w-10 h-10 rounded-full object-cover'
                             />
                           )}
+
                           <span className='font-medium'>
                             {contact.user_name}
                           </span>
