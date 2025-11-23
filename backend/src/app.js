@@ -31,6 +31,8 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(express.json());
 app.use(cookieParser());
 
+app.use('/users', express.static(path.join(__dirname, '../public/img/users')));
+
 app.use('/api/contacts', contactRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
