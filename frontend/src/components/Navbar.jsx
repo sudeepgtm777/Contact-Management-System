@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
+import { UserContext } from '../context/UserContext.jsx';
 import api from '../utils/axios.js';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
 const Navbar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user, setUser } = useContext(UserContext);
 
   // Check login state on mount
   useEffect(() => {
@@ -72,14 +75,23 @@ const Navbar = () => {
                       Log Out
                     </button>
                     {/* Show first name */}
-                    <img
-                      src={`/users/${user.photo}`}
-                      alt={`Photo of ${user?.name}`}
-                      className=' w-10 h-10 rounded-full object-cover border border-gray-30'
-                    />{' '}
-                    <span className=' text-white rounded-md px-3 py-2'>
-                      {user?.name?.split(' ')[0]}
-                    </span>
+                    <NavLink to='/account'>
+                      <img
+                        src={
+                          user?.photo
+                            ? `${BACKEND_URL}/users/${user.photo}`
+                            : '/default-avatar.png'
+                        }
+                        alt={`Photo of ${user?.name}`}
+                        className='w-10 h-10 rounded-full object-cover border border-gray-300'
+                      />
+                    </NavLink>
+                    <NavLink to='/account' className={LinkClass}>
+                      <span className=' text-white rounded-md px-3 py-2'>
+                        {user?.name?.split(' ')[0]}
+                      </span>
+                    </NavLink>
+
                     {/* Sign out button */}
                   </>
                 ) : (
