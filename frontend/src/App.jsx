@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import SignUp from './pages/SignupPage';
 import AddContactPage from './pages/AddContactPage';
 import EditContactPage from './pages/EditContactPage';
+import AccountPage from './pages/AccountPage';
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path='*' element={<NotFoundPage />} />
           <Route path='/sign-up' element={<SignUp />} />
           <Route path='/sign-in' element={<LoginPage />} />
+          <Route path='/account' element={<AccountPage />} />
         </Route>
       </Routes>
     </div>
