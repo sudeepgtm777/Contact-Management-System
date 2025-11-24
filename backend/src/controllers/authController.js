@@ -88,9 +88,9 @@ export const logout = (req, res) => {
   res.status(200).json({ status: 'success', message: 'Logout successful' });
 };
 
-// =====================
+// =========================
 //  Check if User Logged In
-// =====================
+// =========================
 export const isLoggedIn = async (req, res, next) => {
   try {
     const token = req.cookies?.jwt;
@@ -155,4 +155,27 @@ export const protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   res.locals.user = currentUser;
   next();
+});
+
+// =====================
+//  UPDATE MY PASSWORD
+// =====================
+export const updateMyPassword = catchAsync(async (req, res, next) => {
+  const { passwordCurrent, password, passwordConfirm } = req.body;
+
+  // 1. Get user with password
+  const user = await User.findById(req.user.id).select('+password');
+
+  // 2. Check if current password matches
+  if (!(await user.correctPassword(passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is incorrect.', 401));
+  }
+
+  // 3. Update password
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  await user.save();
+
+  // 4. Log user in again (generate new JWT)
+  createSendToken(user, 200, req, res);
 });
