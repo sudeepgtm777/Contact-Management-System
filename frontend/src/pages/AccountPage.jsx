@@ -36,6 +36,11 @@ const AccountPage = () => {
   }, []);
 
   // Update name + photo
+  // =========================
+  //  The Photo of the user updates fine in local PC and stores it.
+  //  It doesnot store in the deployed site since there is no cloud storage used.
+  //  It shows the image for some specifc time the user is active and deletes it automatically.
+  // =========================
   const handleUserUpdate = async (e) => {
     e.preventDefault();
     setLoadingSettings(true);
