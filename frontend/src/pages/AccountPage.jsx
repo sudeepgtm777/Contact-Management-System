@@ -61,6 +61,36 @@ const AccountPage = () => {
     }
   };
 
+  // Update password
+  const handlePasswordUpdate = async (e) => {
+    e.preventDefault();
+    setLoadingPassword(true);
+
+    try {
+      await api.patch('/auth/updateMyPassword', {
+        passwordCurrent: currentPassword,
+        password: newPassword,
+        passwordConfirm: confirmPassword,
+      });
+
+      toast.success('Password updated!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      console.error('Password update failed', err);
+
+      const message =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        'Failed to update password.';
+
+      toast.error(message);
+    } finally {
+      setLoadingPassword(false);
+    }
+  };
+
   if (!user) return <div className='text-center text-xl mt-20'>Loading...</div>;
 
   return (
@@ -116,6 +146,61 @@ const AccountPage = () => {
           disabled={loadingSettings}
         >
           {loadingSettings ? 'Saving...' : 'Save Settings'}
+        </button>
+      </form>
+
+      {/* Password Change */}
+      <h2 className='text-3xl font-bold mb-6'>Password Change</h2>
+
+      <form
+        onSubmit={handlePasswordUpdate}
+        className='bg-white p-6 rounded-lg shadow'
+      >
+        <div className='mb-4'>
+          <label className='block font-semibold mb-2'>Current Password</label>
+          <input
+            type='password'
+            required
+            minLength='8'
+            className='w-full border rounded px-3 py-2'
+            placeholder='••••••••'
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
+        </div>
+
+        <div className='mb-4'>
+          <label className='block font-semibold mb-2'>New Password</label>
+          <input
+            type='password'
+            required
+            minLength='8'
+            className='w-full border rounded px-3 py-2'
+            placeholder='••••••••'
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </div>
+
+        <div className='mb-6'>
+          <label className='block font-semibold mb-2'>Confirm Password</label>
+          <input
+            type='password'
+            required
+            minLength='8'
+            className='w-full border rounded px-3 py-2'
+            placeholder='••••••••'
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </div>
+
+        <button
+          type='submit'
+          className='bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700'
+          disabled={loadingPassword}
+        >
+          {loadingPassword ? 'Saving...' : 'Save Password'}
         </button>
       </form>
     </div>
