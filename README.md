@@ -1,4 +1,4 @@
-#  Contact Management App
+# Contact Management App
 
 A full-stack Contact Management Application built with React (frontend) and Express + MongoDB (backend).
 It allows users to register, logIn, and manage their personal contacts securely.
@@ -13,12 +13,9 @@ API Documentation in Postman
 
 [https://documenter.getpostman.com/view/31782444/2sB3WsPf3w](https://documenter.getpostman.com/view/31782444/2sB3WsPf3w)
 
+## Tech Stack
 
-
-
-##  Tech Stack
-
-###  Frontend
+### Frontend
 
 - React
 - Tailwind CSS
@@ -26,7 +23,7 @@ API Documentation in Postman
 - React Router
 - Environment Variables via .env
 
-###  Backend
+### Backend
 
 - Node.js + Express
 - MongoDB (via Mongoose)
@@ -36,8 +33,7 @@ API Documentation in Postman
 
 ---
 
-##  Project Structure
-
+## Project Structure
 
 ```contact-managment-system
 contact-management-system/
@@ -64,17 +60,20 @@ contact-management-system/
 │   └── package.json
 └── README.md
 ```
+
 ---
 
-##  Backend Setup
+## Backend Setup
 
 1️⃣ Clone the Repository
+
 ```
 git clone https://github.com/sudeepgtm777/Contact-Management-System.git
 ```
 
 2️⃣ Install Dependencies
 Open termial
+
 ```
 cd backend
 
@@ -83,6 +82,7 @@ npm install
 
 3️⃣ Environment Variables
 Create a .env file in /backend/config/config.env file with:
+
 ```
 PORT=3000
 DATABASE=your_mongodb_connection_string
@@ -93,6 +93,7 @@ JWT_EXPIRES_IN=90d
 4️⃣ Run the Server
 
 In backend terminal
+
 ```
 npm run dev
 ```
@@ -104,24 +105,32 @@ http://localhost:3000
 
 ## API Endpoints
 
-###  Authentication
+### Authentication
 
-| Method | Endpoint             | Description                |
-| ------ | -------------------- | -------------------------- |
-| POST   | /api/auth/register   | Register a new user        |
-| POST   | /api/auth/login      | Login existing user        |
-| GET    | /api/auth/logout     | Logout user                |
-| GET    | /api/auth/isLoggedIn | Check if user is logged in |
+| Method | Endpoint                   | Description                    |
+| ------ | -------------------------- | ------------------------------ |
+| POST   | /api/auth/register         | Register a new user            |
+| POST   | /api/auth/login            | Login existing user            |
+| GET    | /api/auth/logout           | Logout user                    |
+| GET    | /api/auth/isLoggedIn       | Check if user is logged in     |
+| PATCH  | /api/auth/updateMyPassword | Update logged-in user password |
 
-###  Users
+### Users
 
-| Method | Endpoint       | Description     |
-| ------ | -------------- | --------------- |
-| GET    | /api/users/    | Get all users   |
-| GET    | /api/users/:id | Get single user |
-| PUT    | /api/users/:id | Update user     |
+| Method | Endpoint            | Description                               |
+| ------ | ------------------- | ----------------------------------------- |
+| GET    | /api/users/         | Get all users                             |
+| GET    | /api/users/:id      | Get single user                           |
+| PUT    | /api/users/:id      | Update user                               |
+| PATCH  | /api/users/updateMe | Update logged-in user's profile and photo |
 
-###  Contacts
+### Note:
+
+The logged in user can change the photo which runs perfectely in local PC.
+Since there is not cloud storage the image is not uploaded in any device.
+The selected image gets rendered for the time but will get deleted automatically.
+
+### Contacts
 
 | Method | Endpoint           | Description                    |
 | ------ | ------------------ | ------------------------------ |
@@ -135,20 +144,24 @@ http://localhost:3000
 
 ---
 
-##  Frontend Setup
+## Frontend Setup
+
 Open new terminal
 
 1️⃣ Navigate to the Frontend
+
 ```
 cd frontend
 ```
 
 2️⃣ Install Dependencies
+
 ```
 npm install
 ```
 
 4️⃣ Run the Frontend
+
 ```
 npm run dev
 ```
@@ -158,7 +171,7 @@ http://localhost:5173
 
 ---
 
-##  Authentication Flow
+## Authentication Flow
 
 1. User registers → stored in MongoDB with encrypted password
 2. User logs in → receives JWT token
@@ -168,7 +181,7 @@ http://localhost:5173
 
 ---
 
-##  Deployment
+## Deployment
 
 The deployment of the Contact Managment API is on:
 
@@ -176,7 +189,7 @@ The deployment of the Contact Managment API is on:
 
 ---
 
-##  Scripts
+## Scripts
 
 ### Frontend
 
@@ -195,7 +208,7 @@ The deployment of the Contact Managment API is on:
 
 ---
 
-##  Middleware Used
+## Middleware Used
 
 - cors – Enable cross-origin requests
 - express.json() – Parse incoming JSON
@@ -204,48 +217,56 @@ The deployment of the Contact Managment API is on:
 
 ---
 
-##  Features
+## Features
 
- User registration & login
- JWT-based authentication
- Add, edit, delete, and list contacts
- Get all contacts for a logged-in user
- Responsive UI with Tailwind CSS
- RESTful API architecture
- Deployed backend & frontend on Render
+User registration & login
+JWT-based authentication
+Add, edit, delete, and list contacts
+Get all contacts for a logged-in user
+Responsive UI with Tailwind CSS
+RESTful API architecture
+Deployed backend & frontend on Render
 
 ---
 
 ## Screen Shot Of Contact Mangagement System
 
 ### Home Page
+
 ![Home Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/HomePage.png?raw=true)
 
 ### Sign Up Page
+
 ![Sign Up Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/SignUpPage.png?raw=true)
 
 ### Login Page
+
 ![Login Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/LoginPage.png?raw=true)
 
 ### Contacts Page
+
 ![Contacts Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/ContactsPage.png?raw=true)
 
 ### Add Contact Page
+
 ![Add Contact Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/AddContactPage.png?raw=true)
 
 ### Search in Contacts Page
+
 ![Search in Contacts Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/SearchUseInContactPage.png?raw=true)
 
+### User Profile Update
+
+![Search in Contacts Page Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/UserProfileUpdate.png?raw=true)
+
 ### Bulk Delete Contact
+
 ![Bulk Delete Contact Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/BulkDeleteContact.png?raw=true)
 
 ### Unknown Route
+
 ![Unknown Route Screenshot](https://github.com/sudeepgtm777/Contact-Management-System/blob/main/frontend/public/screenshots/UnknownRoute.png?raw=true)
 
-
-
-
-
-##  Author
+## Author
 
 Sudeep Gautam
