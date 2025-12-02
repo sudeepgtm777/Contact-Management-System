@@ -1,8 +1,13 @@
 import { promisify } from 'util';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import {
+  sendVerificationEmail,
+  sendResetPasswordEmail,
+} from '../email/email.js';
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -21,7 +26,6 @@ const createSendToken = (user, statusCode, req, res) => {
     sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
   });
 
-  // Remove password from output
   user.password = undefined;
 
   res.status(statusCode).json({
@@ -31,43 +35,131 @@ const createSendToken = (user, statusCode, req, res) => {
   });
 };
 
-// =====================
-//  REGISTER Controller
-// =====================
+// =====================================
+// REGISTER & Send Verification Email
+// =====================================
 export const register = catchAsync(async (req, res, next) => {
-  const existingUser = await User.findOne({ email: req.body.email });
-  if (existingUser) {
-    return next(new AppError('Email already exists!', 400));
-  }
+  const { name, email, password, passwordConfirm } = req.body;
 
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
+  const existingUser = await User.findOne({ email });
+  if (existingUser) return next(new AppError('Email already exists!', 400));
+
+  const newUser = await User.create({ name, email, password, passwordConfirm });
+
+  // Generate verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  newUser.emailVerificationToken = crypto
+    .createHash('sha256')
+    .update(verificationToken)
+    .digest('hex');
+  newUser.emailVerificationExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+  await newUser.save({ validateBeforeSave: false });
+
+  // Send email
+  await sendVerificationEmail(email, verificationToken);
+
+  res.status(201).json({
+    status: 'success',
+    message: 'User created. Please check your email to verify account.',
   });
-
-  createSendToken(newUser, 201, req, res);
 });
 
 // =====================
-//  LOGIN Controller
+// VERIFY EMAIL
 // =====================
+export const verifyEmail = catchAsync(async (req, res, next) => {
+  const { token } = req.query;
+  if (!token) return next(new AppError('Token is required', 400));
+
+  // Hash the token to match DB
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  // Find user by hashed token
+  const user = await User.findOne({
+    emailVerificationToken: hashedToken,
+    emailVerificationExpires: { $gt: Date.now() },
+  });
+
+  if (!user) return next(new AppError('Token invalid or expired', 400));
+
+  // Update user
+  user.isVerified = true;
+  user.emailVerificationToken = undefined;
+  user.emailVerificationExpires = undefined;
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({ status: 'success', message: 'Email verified!' });
+});
+
+// ===========
+// LOGIN
+// ===========
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // 1. Check if email and password exist
-  if (!email || !password) {
+  if (!email || !password)
     return next(new AppError('Please provide email and password!', 400));
-  }
 
-  // 2. Check if user exists & password is correct
   const user = await User.findOne({ email }).select('+password');
+
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  // 3. If everything ok, send token
+  if (!user.isVerified)
+    return next(
+      new AppError('Please verify your email before logging in.', 401)
+    );
+
+  createSendToken(user, 200, req, res);
+});
+
+// =====================
+// FORGOT PASSWORD
+// =====================
+export const forgotPassword = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return next(new AppError('No user with this email', 404));
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  user.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  user.passwordResetExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+  await user.save({ validateBeforeSave: false });
+
+  await sendResetPasswordEmail(email, resetToken);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Password reset email sent.',
+  });
+});
+
+// =====================
+// RESET PASSWORD
+// =====================
+export const resetPassword = catchAsync(async (req, res, next) => {
+  const { token, newPassword, passwordConfirm } = req.body;
+
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  }).select('+password');
+
+  if (!user) return next(new AppError('Token invalid or expired', 400));
+
+  user.password = newPassword;
+  user.passwordConfirm = passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
   createSendToken(user, 200, req, res);
 });
 
