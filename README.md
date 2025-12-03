@@ -1,7 +1,7 @@
 # Contact Management App
 
 A full-stack Contact Management Application built with React (frontend) and Express + MongoDB (backend).
-It allows users to register, logIn, and manage their personal contacts securely.
+It allows users to register, logIn, and manage their personal contacts securely. The user validation is done by email verification. The password can be reset using the email verification.
 
 ---
 
@@ -40,6 +40,7 @@ contact-management-system/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
+│   │   ├── context/
 │   │   ├── layouts/
 │   │   ├── pages/
 │   │   ├── utils/
@@ -53,10 +54,12 @@ contact-management-system/
 │   │   ├── config/
 │   │   │   └── config.env
 │   │   ├── controllers/
+│   │   ├── email/
 │   │   ├── models/
 │   │   ├── routes/
 │   │   ├── utils/
 │   │   └── app.js
+│   └── public/
 │   └── package.json
 └── README.md
 ```
@@ -107,13 +110,16 @@ http://localhost:3000
 
 ### Authentication
 
-| Method | Endpoint                   | Description                    |
-| ------ | -------------------------- | ------------------------------ |
-| POST   | /api/auth/register         | Register a new user            |
-| POST   | /api/auth/login            | Login existing user            |
-| GET    | /api/auth/logout           | Logout user                    |
-| GET    | /api/auth/isLoggedIn       | Check if user is logged in     |
-| PATCH  | /api/auth/updateMyPassword | Update logged-in user password |
+| Method | Endpoint                   | Description                                    |
+| ------ | -------------------------- | ---------------------------------------------- |
+| POST   | /api/auth/register         | Register a new user                            |
+| GET    | /api/auth/verify-email     | Verify user email via token link               |
+| POST   | /api/auth/login            | Login existing user                            |
+| GET    | /api/auth/logout           | Logout user                                    |
+| GET    | /api/auth/isLoggedIn       | Check if user is logged in                     |
+| PATCH  | /api/auth/updateMyPassword | Update logged-in user password                 |
+| POST   | /api/auth/forgot-password  | Request password reset link via email          |
+| POST   | /api/auth/reset-password   | Update logged-in user password (authenticated) |
 
 ### Users
 
@@ -173,11 +179,12 @@ http://localhost:5173
 
 ## Authentication Flow
 
-1. User registers → stored in MongoDB with encrypted password
-2. User logs in → receives JWT token
-3. JWT is stored in localStorage/cookies
-4. Protected routes (contacts CRUD) require valid JWT
-5. User logs out → JWT invalidated/removed
+1. User registers → stored in MongoDB with encrypted password.
+2. User logs in → receives JWT token.
+3. User clicks verification email → hits /verify-email route.
+4. User forgets password → submits email to /forgot-password.
+5. User receives reset link → submits new password to /reset-password.
+6. Protected routes (contacts CRUD) require valid JWT.
 
 ---
 
@@ -220,6 +227,7 @@ The deployment of the Contact Managment API is on:
 ## Features
 
 User registration & login
+User verificatioin through email
 JWT-based authentication
 Add, edit, delete, and list contacts
 Get all contacts for a logged-in user
