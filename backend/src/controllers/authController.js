@@ -109,7 +109,10 @@ export const login = catchAsync(async (req, res, next) => {
 
   if (!user.isVerified)
     return next(
-      new AppError('Please verify your email before logging in.', 401)
+      new AppError(
+        'Please verify your email before logging in. Verification sent to email.',
+        401
+      )
     );
 
   createSendToken(user, 200, req, res);
