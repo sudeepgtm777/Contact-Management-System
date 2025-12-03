@@ -68,28 +68,42 @@ export const register = catchAsync(async (req, res, next) => {
 // VERIFY EMAIL
 // =====================
 export const verifyEmail = catchAsync(async (req, res, next) => {
-  const { token } = req.query;
-  if (!token) return next(new AppError('Token is required', 400));
+  const { token, email } = req.query;
 
-  // Hash the token to match DB
+  if (!token || !email) {
+    return res
+      .status(400)
+      .json({ status: 'failed', message: 'Token and email are required' });
+  }
+
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-  // Find user by hashed token
   const user = await User.findOne({
+    email,
     emailVerificationToken: hashedToken,
     emailVerificationExpires: { $gt: Date.now() },
   });
 
-  if (!user) return next(new AppError('Token invalid or expired', 400));
+  if (!user) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser && existingUser.isVerified) {
+      return res
+        .status(200)
+        .json({ status: 'success', message: 'Email already verified.' });
+    }
+    return res
+      .status(400)
+      .json({ status: 'failed', message: 'Link is invalid or expired' });
+  }
 
-  // Update user
   user.isVerified = true;
   user.emailVerificationToken = undefined;
   user.emailVerificationExpires = undefined;
-
   await user.save({ validateBeforeSave: false });
 
-  res.status(200).json({ status: 'success', message: 'Email verified!' });
+  res
+    .status(200)
+    .json({ status: 'success', message: 'Email verified successfully' });
 });
 
 // ===========
@@ -131,7 +145,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
-  user.passwordResetExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+  user.passwordResetExpires = Date.now() + 60 * 60 * 1000;
   await user.save({ validateBeforeSave: false });
 
   await sendResetPasswordEmail(email, resetToken);
@@ -146,7 +160,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
 // RESET PASSWORD
 // =====================
 export const resetPassword = catchAsync(async (req, res, next) => {
-  const { token, newPassword, passwordConfirm } = req.body;
+  const { token, password, confirmPassword } = req.body;
 
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
@@ -157,13 +171,16 @@ export const resetPassword = catchAsync(async (req, res, next) => {
 
   if (!user) return next(new AppError('Token invalid or expired', 400));
 
-  user.password = newPassword;
-  user.passwordConfirm = passwordConfirm;
+  user.password = password;
+  user.passwordConfirm = confirmPassword;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
 
-  createSendToken(user, 200, req, res);
+  res.status(200).json({
+    status: 'success',
+    message: 'Password has been reset successfully. Please log in.',
+  });
 });
 
 // =====================
