@@ -5,11 +5,11 @@ const getResend = () => {
   return new Resend(process.env.RESEND_API_KEY);
 };
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 export const sendVerificationEmail = async (to, token) => {
   const resend = getResend();
-  const url = `${BACKEND_URL}/api/auth/verify-email?token=${token}`;
+  const url = `${FRONTEND_URL}/email-verified?token=${token}&email=${to}`;
 
   await resend.emails.send({
     from: process.env.RESEND_VERIFIED_SENDER,
@@ -39,7 +39,7 @@ export const sendVerificationEmail = async (to, token) => {
 
 export const sendResetPasswordEmail = async (to, token) => {
   const resend = getResend();
-  const url = `${BACKEND_URL}/api/auth/reset-password?token=${token}`;
+  const url = `${FRONTEND_URL}/reset-password?token=${token}`;
 
   await resend.emails.send({
     from: process.env.RESEND_VERIFIED_SENDER,
