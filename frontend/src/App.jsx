@@ -8,6 +8,9 @@ import SignUp from './pages/SignupPage';
 import AddContactPage from './pages/AddContactPage';
 import EditContactPage from './pages/EditContactPage';
 import AccountPage from './pages/AccountPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import EmailVerifiedPage from './pages/EmailVerifiedPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 const App = () => {
   return (
@@ -21,7 +24,10 @@ const App = () => {
           <Route path='/sign-up' element={<SignUp />} />
           <Route path='/sign-in' element={<LoginPage />} />
           <Route path='/account' element={<AccountPage />} />
+          <Route path='/forgot-password' element={<ForgotPasswordPage />} />
         </Route>
+        <Route path='/email-verified' element={<EmailVerifiedPage />} />
+        <Route path='/reset-password' element={<ResetPasswordPage />} />
       </Routes>
     </div>
   );
