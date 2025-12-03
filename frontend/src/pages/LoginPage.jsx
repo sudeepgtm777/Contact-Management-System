@@ -73,6 +73,14 @@ const LoginPage = () => {
               Login
             </button>
           </div>
+          <div className='text-center mt-2'>
+            <a
+              href='/forgot-password'
+              className='text-violet-600 hover:text-violet-700 text-sm font-medium'
+            >
+              Forgot your password?
+            </a>
+          </div>
 
           {error && (
             <p className='mt-4 text-center text-red-600 font-medium'>{error}</p>
